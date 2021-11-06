@@ -7,7 +7,7 @@ use toml::Value;
 
 #[derive(Deserialize, Serialize)]
 pub struct Config {
-    pub cycle: u32,
+    pub cycle: u64,
     pub discord: Discord,
     pub triggers: Table,
 }
