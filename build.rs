@@ -1,12 +1,11 @@
 #[cfg(target_os = "windows")]
-extern crate windres;
-
-#[cfg(target_os = "windows")]
-use windres::Build;
+extern crate winres;
 
 #[cfg(target_os = "windows")]
 fn main() {
-    Build::new().compile("logo.rc").unwrap();
+    let mut res = winres::WindowsResource::new();
+    res.set_icon("logo.ico");
+    res.compile().unwrap();
 }
 
 #[cfg(target_os = "linux")]
