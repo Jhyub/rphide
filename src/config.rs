@@ -67,7 +67,7 @@ impl Config {
                     None
                 } else {
                     match Regex::new(a.as_str()) {
-                        Ok(re) => re,
+                        Ok(re) => Some(re),
                         Err(_) => None
                     }
                 },

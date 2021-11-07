@@ -1232,6 +1232,7 @@ dependencies = [
  "regex",
  "serde",
  "sysinfo",
+ "tokio",
  "toml",
  "tray-item",
 ]
