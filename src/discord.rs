@@ -7,7 +7,6 @@ use discord_sdk as ds;
 pub const APP_ID: ds::AppId = 886532512833228801;
 
 pub async fn connect(config: Arc<Mutex<Config>>, rx: mpsc::Receiver<Status>) {
-    println!("got in to connect");
     let (details, status) = {
         let config = config.lock().unwrap();
         (config.discord.details.clone(), config.discord.status.clone())
@@ -18,7 +17,6 @@ pub async fn connect(config: Arc<Mutex<Config>>, rx: mpsc::Receiver<Status>) {
 
     loop {
         let res = rx.recv().unwrap();
-        println!("{:?}", res);
         match &res {
             Status::Hide => {
                 match &current_status {

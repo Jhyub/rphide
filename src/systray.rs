@@ -16,6 +16,12 @@ pub fn init(config: Arc<Mutex<Config>>) {
         let mut config = config.lock().unwrap();
         *config = Config::load();
     }).unwrap();
+    tray.add_menu_item("Edit config", move|| {
+        open::that(Config::config_path());
+    }).unwrap();
+    tray.add_menu_item("Exit", move|| {
+        std::process::exit(0);
+    });
 
     gtk::main();
 }

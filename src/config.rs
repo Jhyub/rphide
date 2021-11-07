@@ -36,7 +36,7 @@ impl Config {
         }
     }
 
-    fn config_path() -> PathBuf {
+    pub fn config_path() -> PathBuf {
         let mut buf = dirs::config_dir().unwrap();
         buf.push("rphide.toml");
         buf
