@@ -1,6 +1,7 @@
 use std::sync::{Arc, mpsc, Mutex};
 use std::thread;
 use std::time::Duration;
+use regex::Regex;
 use sysinfo::{ProcessExt, RefreshKind, System, SystemExt};
 use crate::config::Config;
 
@@ -8,7 +9,7 @@ use crate::config::Config;
 pub enum Status {
     Hide,
     Show,
-    CheckWindow(Vec<String>)
+    CheckWindow(Vec<Regex>)
 }
 
 pub fn start_scan(config: Arc<Mutex<Config>>) -> mpsc::Receiver<Status> {
@@ -63,6 +64,11 @@ pub fn start_scan(config: Arc<Mutex<Config>>) -> mpsc::Receiver<Status> {
                 }
             }
 
+            best = match &best {
+                Status::CheckWindow(a) => check_title_regex(a),
+                _ => best
+            };
+
             tx.send(best);
 
             thread::sleep(Duration::from_millis(cycle));
@@ -70,4 +76,9 @@ pub fn start_scan(config: Arc<Mutex<Config>>) -> mpsc::Receiver<Status> {
     });
 
     rx
+}
+
+fn check_title_regex(vec: &Vec<Regex>) -> Status {
+    // WIP!
+    Status::Hide
 }

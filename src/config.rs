@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
+use regex::Regex;
 use toml::value::Table;
 use serde::{Deserialize, Serialize};
 use toml::Value;
@@ -20,7 +21,7 @@ pub struct Discord {
 
 pub struct Trigger {
     pub process_name: String,
-    pub window_name: Option<String>,
+    pub window_name: Option<Regex>,
 }
 
 impl Config {
@@ -60,12 +61,15 @@ impl Config {
     }
 
     pub fn triggers(&self) -> Vec<Trigger> {
-        fn value_to_string(value: Value) -> Option<String> {
+        fn value_to_string(value: Value) -> Option<Regex> {
             match value {
-                Value::String(a) => if a.as_str() == "*" {
+                Value::String(a) => if a.is_empty() {
                     None
                 } else {
-                    Some(a)
+                    match Regex::new(a.as_str()) {
+                        Ok(re) => re,
+                        Err(_) => None
+                    }
                 },
                 _ => None
             }
