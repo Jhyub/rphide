@@ -76,6 +76,4 @@ async fn make_client(subs: ds::Subscriptions) -> Client {
         user,
         wheel
     }
-
-
 }
