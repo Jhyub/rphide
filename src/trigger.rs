@@ -1,3 +1,4 @@
+use std::ops::Add;
 use std::sync::{Arc, mpsc, Mutex};
 use std::thread;
 use std::time::Duration;
@@ -32,7 +33,7 @@ pub fn start_scan(config: Arc<Mutex<Config>>) -> mpsc::Receiver<Status> {
             let mut best = Status::Show;
             for (_, v) in processes {
                 for trigger in triggers.iter() {
-                    if v.name() == trigger.process_name.as_str() {
+                    if check_process_name(trigger.process_name.as_str(), v.name()){
                         match &trigger.window_name {
                             None => {
                                 match &best {
@@ -76,6 +77,16 @@ pub fn start_scan(config: Arc<Mutex<Config>>) -> mpsc::Receiver<Status> {
     });
 
     rx
+}
+
+fn check_process_name(trigger: &str, actual: &str) -> bool {
+    if trigger.to_lowercase() == actual.to_lowercase() {
+        return true;
+    }
+    if trigger.to_lowercase().add(".exe") == actual.to_lowercase() {
+        return true;
+    }
+    return false;
 }
 
 fn check_title_regex(vec: &Vec<Regex>) -> Status {
