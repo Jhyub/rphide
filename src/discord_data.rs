@@ -30,7 +30,7 @@ impl DiscordData {
     }
 
     pub fn read_from(stream: &mut LocalSocketStream) -> Result<DiscordData, Box<dyn Error>> {
-        let mut header_buff: [u8;8] = [0,0,0,0,0,0,0,0];
+        let mut header_buff = [0u8;8];
         stream.read(&mut header_buff)?;
 
         let mut rdr = Cursor::new(&header_buff[0..4]);

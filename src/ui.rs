@@ -4,15 +4,20 @@ use eframe::{Frame};
 use egui::{Context};
 use crate::ui;
 
+#[derive(Debug)]
 pub enum UiUpdate {
     AskRestart,
-    Close,
+    Hide,
+    Unhide,
+    AcutallyQuit,
 }
 
+#[derive(Debug)]
 pub enum UiResult {
     RestartDiscord,
 }
 
+#[derive(Debug)]
 pub struct Ui {
     title: String,
     show_restart_discord_dialog: bool,
@@ -61,8 +66,16 @@ impl eframe::App for Ui {
                 UiUpdate::AskRestart => {
                     self.show_restart_discord_dialog = true;
                 }
-                UiUpdate::Close => {
+                UiUpdate::Hide => {
                     self.hide = true;
+                }
+                UiUpdate::Unhide => {
+                    self.hide = false;
+                }
+                UiUpdate::AcutallyQuit => {
+                    self.actually_close = true;
+                    frame.close();
+                    return
                 }
             }
         }
@@ -77,14 +90,14 @@ impl eframe::App for Ui {
                 .collapsible(false)
                 .resizable(false)
                 .show(ctx, |ui| {
-                    ui.heading("Discord needs to be restarted for rphide to work.");
+                    ui.heading("You need to restart discord in order to use rphide");
                     ui.horizontal(|ui| {
-                        if ui.button("Yes").clicked() {
+                        if ui.button("Restart Discord").clicked() {
                             // Do Something Here
                             self.tx.send(ui::UiResult::RestartDiscord).unwrap();
                             self.show_restart_discord_dialog = false;
                         }
-                        if ui.button("No").clicked() {
+                        if ui.button("Quit rphide").clicked() {
                             self.actually_close = true;
                             frame.close();
                         }
