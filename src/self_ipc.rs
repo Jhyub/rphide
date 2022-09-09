@@ -3,7 +3,6 @@ use std::io::{BufReader, Cursor, Read, Write};
 use std::ops::Add;
 use std::sync::mpsc;
 use std::time::Duration;
-use byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use interprocess::local_socket::{LocalSocketListener, LocalSocketStream};
 use log::{error, info};
 use sysinfo::{PidExt, ProcessRefreshKind, RefreshKind, System, SystemExt, Pid, ProcessExt};
@@ -86,9 +85,9 @@ pub fn listen_primary_ipc(listener: LocalSocketListener, tx: mpsc::Sender<ui::Ui
             match action {
                 Action::Knock => {
                     if check_tray() {
-                        conn.write_u8(SecondaryTask::Tray as u8).unwrap();
+                        conn.write(&[SecondaryTask::Exit as u8]).unwrap();
                     } else {
-                        conn.write_u8(SecondaryTask::Exit as u8).unwrap();
+                        conn.write(&[SecondaryTask::Tray as u8]).unwrap();
                     }
                 }
                 Action::Hide => {
@@ -108,9 +107,11 @@ pub fn listen_primary_ipc(listener: LocalSocketListener, tx: mpsc::Sender<ui::Ui
 }
 
 pub fn knock(stream: &mut LocalSocketStream) -> SecondaryTask {
-    stream.write_u8(Action::Knock as u8).unwrap();
+    stream.write_all(&[Action::Knock as u8]).unwrap();
     info!("Knocked to primary");
-    match stream.read_u8().unwrap() {
+    let mut buff = [0u8];
+    stream.read(&mut buff).unwrap();
+    match buff[0] {
         0 => SecondaryTask::Tray,
         1 => SecondaryTask::Exit,
         _ => SecondaryTask::None,
